@@ -12,6 +12,8 @@ sqlalchemy = "^2.0.29"
 psycopg2-binary = "^2.9.9"
 chardet = "^5.2.0"
 jupyter = "^1.0.0"
+matplotlib = "^3.8.4"
+seaborn = "^0.13.2"
 
 
 [build-system]

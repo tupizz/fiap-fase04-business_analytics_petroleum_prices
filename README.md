@@ -2,6 +2,9 @@
 
 ```bash
 poetry new poetry-demo
+poetry add matplotlib seaborn
+poetry add pandas
+poetry add numpy
 ```
 
 
@@ -35,7 +38,51 @@ CREATE TABLE public.preco_combustivel(
 ### Load data to database (option 1) ✅ choosed
 
 ```bash
+poetry run python ./business_analytics_fase04/01_load_pg_data.py
+```
 
+```python
+def transform_and_load(file_path: str):
+    encoding = detect_encoding(file_path)
+    print(f"Detected encoding: {encoding}")
+
+    print(f"Loading data from {os.path.basename(file_path)}...")
+    # Load CSV into DataFrame
+    df = pd.read_csv(file_path, encoding=encoding, delimiter=';', quotechar='"', header=0, on_bad_lines='skip')
+
+    # Rename columns as necessary (adjust according to your needs)
+    df.rename(columns={
+        'Regiao - Sigla': 'regiao',
+        'Estado - Sigla': 'estado',
+        'Municipio': 'municipio',
+        'Revenda': 'revenda',
+        'CNPJ da Revenda': 'cnpj',
+        'Nome da Rua': 'nome_rua',
+        'Numero Rua': 'numero_rua',
+        'Complemento': 'complemento',
+        'Bairro': 'bairro',
+        'Cep': 'cep',
+        'Produto': 'produto',
+        'Data da Coleta': 'data_coleta',
+        'Valor de Venda': 'valor_venda',
+        'Unidade de Medida': 'unidade_medida',
+        'Bandeira': 'bandeira'
+    }, inplace=True)
+
+    df.drop(['Valor de Compra'], axis=1, inplace=True)
+
+    # Convert data types
+    df['data_coleta'] = pd.to_datetime(df['data_coleta'], format='%d/%m/%Y')
+    df['valor_venda'] = df['valor_venda'].str.replace(',', '.').astype(float)
+
+    # Handle missing values
+    df['complemento'] = df['complemento'].fillna('')  # Assuming empty string for missing complemento
+
+    print(df.info())
+
+    # # Load DataFrame into PostgreSQL table
+    df.to_sql('preco_combustivel', con=engine, if_exists='append', index=False)
+    print(f"Data from {os.path.basename(file_path)} loaded successfully.")
 ```
 
 ### Load data to database (option 2)
