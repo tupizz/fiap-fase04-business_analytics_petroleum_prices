@@ -1,0 +1,14 @@
+version: '3.8'
+
+services:
+  postgres:
+    image: postgres:15
+    environment:
+      POSTGRES_PASSWORD: 123456
+    volumes:
+      - ./pg_data:/var/lib/postgresql/data  # Maps './pg_data' directory to the container's data directory
+    ports:
+      - "5432:5432"  # Maps port 5432 of the container to port 5432 on the host
+
+volumes:
+  data:
